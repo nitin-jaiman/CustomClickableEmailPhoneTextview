@@ -21,8 +21,12 @@ import java.util.regex.Pattern;
  * Created by apple on 10/11/16.
  */
 
+//TODO: Add Exceptions
 public class CustomPartialyClickableTextview extends TextView {
 
+    /**
+     * hashmap to hold clickPatterns objects
+     */
     private HashMap<String, ClickPattern> clickPatterns = new HashMap<String, ClickPattern>();
 
     public HashMap<String, ClickPattern> getClickPatterns() {
@@ -92,36 +96,30 @@ public class CustomPartialyClickableTextview extends TextView {
     }
 
 
+    /**
+     * Make Spannables for respective Strings and add onClick methods respectively
+     * @param textView
+     */
     private void makePatternsClickable(TextView textView) {
 
 
-        Iterator it = clickPatterns.entrySet().iterator();
+        Iterator it = clickPatterns.entrySet().iterator(); // take out iterator of clickPatterns
 
 
-        while (it.hasNext()) {
+        while (it.hasNext()) {  // Iterate through all the added patterns one by one
 
             Map.Entry pair = (Map.Entry) it.next();
             final ClickPattern clickPattern = (ClickPattern) pair.getValue();
 
-            ArrayList<String> emailsFromString = getPatternFromString(textView.getText().toString(), clickPattern.getRegex());
+            /**
+             * patternsFromStrung will contain all the found patterns
+             */
+            ArrayList<String> patternsFromString = getPatternFromString(textView.getText().toString(), clickPattern.getRegex());
 
             int i = 0;
-            for (String s : emailsFromString) {
+            for (String s : patternsFromString) {
 
-                SpannableString ss = new SpannableString(textView.getText());
-                ClickableSpan span1 = new ClickableSpan() {
-                    @Override
-                    public void onClick(View textView) {
-
-
-                        clickPattern.getOnClickListener().onClick();
-
-                    }
-                };
-                ss.setSpan(span1, textView.getText().toString().indexOf(emailsFromString.get(i)), textView.getText().toString().indexOf(emailsFromString.get(i)) + emailsFromString.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                textView.setText(ss);
-                textView.setMovementMethod(LinkMovementMethod.getInstance());
+                MakeSpannableStrings(textView, clickPattern, patternsFromString, i);
 
 
                 i++;
@@ -130,6 +128,30 @@ public class CustomPartialyClickableTextview extends TextView {
         }
 
 
+    }
+
+    /**
+     * code to make pattern clickable and add respective onClick implementation
+     * @param textView
+     * @param clickPattern
+     * @param emailsFromString
+     * @param i
+     */
+    private void MakeSpannableStrings(TextView textView, final ClickPattern clickPattern, ArrayList<String> emailsFromString, int i) {
+        SpannableString ss = new SpannableString(textView.getText());
+        ClickableSpan span1 = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+
+
+                clickPattern.getOnClickListener().onClick();
+
+            }
+        };
+        ss.setSpan(span1, textView.getText().toString().indexOf(emailsFromString.get(i)), textView.getText().toString().indexOf(emailsFromString.get(i)) + emailsFromString.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 
