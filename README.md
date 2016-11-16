@@ -1,6 +1,10 @@
 Android Doesn't have clickable emailaddress or phonenumber within textview unlike IOS. 
 This library is a custom implementation of Android's default textview.
 
+EDIT: Library has been further enhanced, now you can make any pattern clickable just provide regex of that pattern.
+In the "How to use library" section below I have explained how to use this library by giving example of three patterns email,
+phone and weblink.
+
 In your project gradle put
 
 maven { url "https://jitpack.io" }
