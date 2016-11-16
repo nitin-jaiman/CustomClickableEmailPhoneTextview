@@ -5,6 +5,12 @@ In your project gradle put
 
 maven { url "https://jitpack.io" }
 
+
+DEMO:
+
+![alt tag](/demo.gif)
+
+
 In your app gradle put
 
           dependencies {
