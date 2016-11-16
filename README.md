@@ -11,12 +11,13 @@ maven { url "https://jitpack.io" }
 
 It will look something like this
 
- repositories {
+
+        allprojects {
+        repositories {
         jcenter()
         maven { url "https://jitpack.io" }
-
-
-    }
+        }
+        }
 
 
 DEMO:
