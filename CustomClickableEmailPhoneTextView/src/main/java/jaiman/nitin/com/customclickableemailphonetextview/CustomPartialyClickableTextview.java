@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
  */
 
 //TODO: Add Exceptions
+//TODO: Add functionality to remove listener
+//TODO: Add CONSTANS for common used regex
 public class CustomPartialyClickableTextview extends TextView {
 
     /**

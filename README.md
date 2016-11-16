@@ -21,19 +21,64 @@ How to use library
 
 
 
-        customPartialyClickableTextview= (CustomPartialyClickableTextview) findViewById(R.id.textViewCustom);
+           CustomPartialyClickableTextview customPartialyClickableTextview= (CustomPartialyClickableTextview) findViewById(R.id.textViewCustom);
 
-        customPartialyClickableTextview.setOnHandleClicks(new CustomPartialyClickableTextview.OnHandleClicks() {
-            @Override
-            public void onEmailClick() {
-                Toast.makeText(CustomTextView.this,"email clicked",Toast.LENGTH_LONG).show();
-            }
+                /**
+                 * Create Objects For Click Patterns
+                 */
+                ClickPattern email=new ClickPattern();
+                ClickPattern phone=new ClickPattern();
+                ClickPattern weblink=new ClickPattern();
 
-            @Override
-            public void onPhoneClick() {
+                /**
+                 * set Functionality for what will happen on click of that pattern
+                 * In this example pattern is email
+                 */
+                email.setOnClickListener(new ClickPattern.OnClickListener() {
+                    @Override
+                    public void onClick() {
 
-                Toast.makeText(CustomTextView.this,"phone clicked",Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"email clicked",Toast.LENGTH_LONG).show();
 
-            }
-        });
+
+                    }
+                });
+
+                /**
+                 * set Functionality for what will happen on click of that pattern
+                 * In this example pattern is phone
+                 */
+                phone.setOnClickListener(new ClickPattern.OnClickListener() {
+                    @Override
+                    public void onClick() {
+                        Toast.makeText(MainActivity.this,"phone clicked",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
+                /**
+                 * set Functionality for what will happen on click of that pattern
+                 * In this example pattern is weblink
+                 */
+                weblink.setOnClickListener(new ClickPattern.OnClickListener() {
+                    @Override
+                    public void onClick() {
+                        Toast.makeText(MainActivity.this,"website clicked",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
+                /**
+                 * set respective regex string to be used to identify patter
+                 */
+                email.setRegex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b"); // regex for email
+                phone.setRegex("[1-9][0-9]{9,14}"); // regex for phone number
+                weblink.setRegex("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"); // regex for weblink
+
+                /**
+                 * add click pattern to the custom textview - first parameter is tag for reference second parameter is ClickPattern object
+                 */
+                customPartialyClickableTextview.addClickPattern("email",email);
+                customPartialyClickableTextview.addClickPattern("phone",phone);
+                customPartialyClickableTextview.addClickPattern("weblink",weblink);
 
