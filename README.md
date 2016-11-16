@@ -19,7 +19,9 @@ In your app gradle put
 
 How to use library
 
-customPartialyClickableTextview= (CustomPartialyClickableTextview) findViewById(R.id.textViewCustom);
+
+
+        customPartialyClickableTextview= (CustomPartialyClickableTextview) findViewById(R.id.textViewCustom);
 
         customPartialyClickableTextview.setOnHandleClicks(new CustomPartialyClickableTextview.OnHandleClicks() {
             @Override
