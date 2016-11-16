@@ -1,4 +1,4 @@
-Android Doesn't have clickable emailaddress or phonenumber within textview unlike IOS. 
+Android Doesn't have clickable email address or phonenumber within textview unlike IOS.
 This library is a custom implementation of Android's default textview.
 
 EDIT: Library has been further enhanced, now you can make any pattern clickable just provide regex of that pattern.
@@ -18,7 +18,7 @@ DEMO:
 In your app gradle put
 
           dependencies {
-	        compile 'com.github.nitin-jaiman:CustomClickableEmailPhoneTextview:1.0'
+	        compile 'com.github.nitin-jaiman:CustomClickableEmailPhoneTextview:3.0'
 	                     }
 
 How to use library
