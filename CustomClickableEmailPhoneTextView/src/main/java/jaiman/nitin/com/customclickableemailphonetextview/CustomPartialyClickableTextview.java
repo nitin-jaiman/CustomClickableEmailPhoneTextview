@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,15 +23,16 @@ import java.util.regex.Pattern;
 
 public class CustomPartialyClickableTextview extends TextView {
 
-    private OnHandleClicks onHandleClicks;
+    private HashMap<String, ClickPattern> clickPatterns = new HashMap<String, ClickPattern>();
 
-    public OnHandleClicks getOnHandleClicks() {
-        return onHandleClicks;
+    public HashMap<String, ClickPattern> getClickPatterns() {
+        return clickPatterns;
     }
 
-    public void setOnHandleClicks(OnHandleClicks onHandleClicks) {
-        this.onHandleClicks = onHandleClicks;
+    public void setClickPatterns(HashMap<String, ClickPattern> clickPatterns) {
+        this.clickPatterns = clickPatterns;
     }
+
 
     public CustomPartialyClickableTextview(Context context) {
         super(context);
@@ -39,14 +43,14 @@ public class CustomPartialyClickableTextview extends TextView {
     public CustomPartialyClickableTextview(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        init(context,attrs);
+        init(context, attrs);
 
     }
 
     public CustomPartialyClickableTextview(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        init(context,attrs);
+        init(context, attrs);
 
     }
 
@@ -58,10 +62,14 @@ public class CustomPartialyClickableTextview extends TextView {
      */
     private void init(Context context, AttributeSet attrs) {
 
+        //  makeTextEmailClickable(this);
+        //  makeTextPhoneClickable(this);
 
-      makeTextEmailClickable(this);
-        makeTextPhoneClickable(this);
-    } /**
+
+        makePatternsClickable(this);
+    }
+
+    /**
      * Initialize fields.
      *
      * @param context
@@ -69,8 +77,11 @@ public class CustomPartialyClickableTextview extends TextView {
     private void init(Context context) {
 
 
-      makeTextEmailClickable(this);
-        makeTextPhoneClickable(this);
+        //  makeTextEmailClickable(this);
+        //  makeTextPhoneClickable(this);
+
+
+        makePatternsClickable(this);
     }
 
     @Override
@@ -80,80 +91,42 @@ public class CustomPartialyClickableTextview extends TextView {
 
     }
 
-    /**
-     * If any phone found from getPhoneFromString() method set spannable on it.
-     * @param textView
-     */
-    public void makeTextPhoneClickable(TextView textView){
+
+    private void makePatternsClickable(TextView textView) {
 
 
-        ArrayList<String> emailsFromString= getPhonesFromString(textView.getText().toString());
-
-        int i=0;
-        for(String s:emailsFromString){
-
-            SpannableString ss = new SpannableString(textView.getText());
-            ClickableSpan span1 = new ClickableSpan() {
-                @Override
-                public void onClick(View textView) {
+        Iterator it = clickPatterns.entrySet().iterator();
 
 
-                    if(onHandleClicks!=null){
+        while (it.hasNext()) {
 
-                        onHandleClicks.onPhoneClick();
+            Map.Entry pair = (Map.Entry) it.next();
+            final ClickPattern clickPattern = (ClickPattern) pair.getValue();
 
-                    }
+            ArrayList<String> emailsFromString = getPatternFromString(textView.getText().toString(), clickPattern.getRegex());
 
-                }
-            };
-            ss.setSpan(span1, textView.getText().toString().indexOf(emailsFromString.get(i)) , textView.getText().toString().indexOf(emailsFromString.get(i))+emailsFromString.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int i = 0;
+            for (String s : emailsFromString) {
 
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-
-
-
-            i++;
-
-        }
+                SpannableString ss = new SpannableString(textView.getText());
+                ClickableSpan span1 = new ClickableSpan() {
+                    @Override
+                    public void onClick(View textView) {
 
 
-    }
-
-    /**
-     * If any email found from getEmailsFromString() method set spannable on it.
-     * @param textView
-     */
-    public void makeTextEmailClickable(TextView textView){
-
-        ArrayList<String> emailsFromString= getEmailsFromString(textView.getText().toString());
-
-        int i=0;
-        for(String s:emailsFromString){
-
-            SpannableString ss = new SpannableString(textView.getText());
-            ClickableSpan span1 = new ClickableSpan() {
-                @Override
-                public void onClick(View textView) {
-
-                    if(onHandleClicks!=null){
-
-                        onHandleClicks.onEmailClick();
+                        clickPattern.getOnClickListener().onClick();
 
                     }
+                };
+                ss.setSpan(span1, textView.getText().toString().indexOf(emailsFromString.get(i)), textView.getText().toString().indexOf(emailsFromString.get(i)) + emailsFromString.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                textView.setText(ss);
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
 
 
-                }
-            };
-            ss.setSpan(span1, textView.getText().toString().indexOf(emailsFromString.get(i)) , textView.getText().toString().indexOf(emailsFromString.get(i))+emailsFromString.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                i++;
 
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-
-
-
-            i++;
-
+            }
         }
 
 
@@ -161,56 +134,39 @@ public class CustomPartialyClickableTextview extends TextView {
 
 
     /**
-     * parsing emails
+     * parsing pattern
+     *
      * @param text
      * @return arraylist of emails
      */
-    public ArrayList<String> getEmailsFromString(String text){
+    public ArrayList<String> getPatternFromString(String text, String regex) {
 
 
-        Pattern p = Pattern.compile("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b",
+        Pattern p = Pattern.compile(regex,
                 Pattern.CASE_INSENSITIVE);
         Matcher matcher = p.matcher(text);
-        ArrayList<String> emails = new ArrayList<>();
+        ArrayList<String> patterns = new ArrayList<>();
 
-        while(matcher.find()) {
-            emails.add(matcher.group());
+        while (matcher.find()) {
+            patterns.add(matcher.group());
         }
 
-        System.out.println(emails);
+        System.out.println(patterns);
 
-        return emails;
-
-    }
-
-    /**
-     * parsing phone-numbers
-     * @param text
-     * @return arraylist of phonenumbers
-     */
-    public ArrayList<String> getPhonesFromString(String text){
-
-
-        Pattern p = Pattern.compile("[1-9][0-9]{9,14}");
-        Matcher matcher = p.matcher(text);
-        ArrayList<String> phones = new ArrayList<>();
-
-        while(matcher.find()) {
-            phones.add(matcher.group());
-        }
-
-        System.out.println(phones);
-
-        return phones;
+        return patterns;
 
     }
 
 
-    interface OnHandleClicks{
+    public void addClickPattern(String tag, ClickPattern clickPattern) {
 
-        public void onEmailClick();
-        public void onPhoneClick();
 
+        if (clickPatterns != null) {
+
+            clickPatterns.put(tag, clickPattern);
+
+            makePatternsClickable(this);
+        }
 
     }
 
