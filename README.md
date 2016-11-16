@@ -9,6 +9,15 @@ In your project gradle put
 
 maven { url "https://jitpack.io" }
 
+It will look something like this
+
+ repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+
+
+    }
+
 
 DEMO:
 
